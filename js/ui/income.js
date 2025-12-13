@@ -5,8 +5,8 @@
 // API-Basis korrekt bestimmen
 const API_BASE =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "http://localhost:5001"
-    : location.origin;
+    ? "http://localhost:5001" // lokal
+    : "https://monetabackend.onrender.com"; // Produktion
 
 const INCOME_URL = `${API_BASE}/api/income`;
 
