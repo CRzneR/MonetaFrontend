@@ -19,7 +19,7 @@ const yearlySum = document.querySelector(".jaehrlicheKostenSumme");
 const varSum = document.querySelector(".variableKostenSumme");
 const totalSum = document.querySelector(".gesamtSumme");
 
-const API_BASE = "http://localhost:5001";
+const API_BASE = "https://monetabackend.onrender.com";
 const COSTS_URL = `${API_BASE}/api/costs`;
 
 // =======================================
