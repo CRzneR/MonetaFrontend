@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moneta</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
+  </head>
+
+  <body class="flex h-screen bg-gray-100" data-page="fixcosts">
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- Hauptinhalt -->
+    <main class="flex-1 ml-64">
+      <div class="h-12 bg-gray-600 flex justify-between px-4 text-white space-x-4">
+        <div class="flex items-center justify-center">
+          <p>Monatliche Kosten</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="px-4 py-6 border-t border-gray-700">
+            <button
+              id="logoutBtn"
+              class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
+            >
+              <i data-lucide="log-out"></i>
+              Logout
+            </button>
+          </div>
+          <div class="text-gray-300 hover:text-white cursor-pointer">🔔</div>
+          <p>Name</p>
+          <img
+            src="https://via.placeholder.com/32"
+            alt="Profilbild"
+            class="w-8 h-8 rounded-full border border-gray-400"
+          />
+        </div>
+      </div>
+
+      <!-- Monate -->
+      <div id="monthsContainer" class="flex justify-between text-xl p-6"></div>
+
+      <!-- Dashboard -->
+      <div class="mx-20 mt-12">
+        <!-- Gesamtkostenübersicht -->
+        <div class="flex gap-4 pb-4">
+          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
+            <p class="text-3xl"><span class="fixKostenSumme">0.00</span> €</p>
+            <p>Fixkosten</p>
+          </div>
+          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
+            <p class="text-3xl"><span class="jaehrlicheKostenSumme">0.00</span></p>
+            <p>Jährliche Kosten</p>
+          </div>
+          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
+            <p class="text-3xl"><span class="variableKostenSumme">0.00</span></p>
+            <p>Variable Kosten</p>
+          </div>
+          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
+            <p class="text-3xl"><span class="gesamtSumme">0.00</span> €</p>
+            <p>Gesamtkosten</p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end mb-4">
+          <button
+            class="addFixCostBtn border border-gray-400 rounded-full p-1 hover:bg-gray-100"
+            title="Hinzufügen"
+          >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Tabellen -->
+        <h2 class="pt-8 text-xl">Monatliche Fixkosten</h2>
+        <table id="fixKostenTabelle" class="min-w-full">
+          <thead>
+            <tr class="bg-gray-400">
+              <th class="border px-2 py-1">Kosten (€)</th>
+              <th class="border px-2 py-1">Name</th>
+              <th class="border px-2 py-1">Kategorie</th>
+              <th class="border px-2 py-1"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <h2 class="pt-8 text-xl">Jährliche Kosten</h2>
+        <table id="jaehrlicheKostenTabelle" class="min-w-full">
+          <thead>
+            <tr class="bg-gray-400">
+              <th class="border px-2 py-1">Kosten (€)</th>
+              <th class="border px-2 py-1">Name</th>
+              <th class="border px-2 py-1">Kategorie</th>
+              <th class="border px-2 py-1"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <h2 class="pt-8 text-xl">Variable Kosten</h2>
+        <table id="variableKostenTabelle" class="min-w-full">
+          <thead>
+            <tr class="bg-gray-400">
+              <th class="border px-2 py-1">Kosten (€)</th>
+              <th class="border px-2 py-1">Name</th>
+              <th class="border px-2 py-1">Kategorie</th>
+              <th class="border px-2 py-1"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Overlay -->
+    <div
+      id="fixCostOverlay"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-6 rounded-xl shadow-xl w-96">
+        <h2 class="text-lg font-semibold mb-4">Kosten hinzufügen</h2>
+
+        <form id="overlayFixCostForm" class="flex flex-col gap-4">
+          <input
+            id="ovCost"
+            type="number"
+            placeholder="Kosten (€)"
+            class="border px-3 py-2 rounded"
+          />
+          <input id="ovName" type="text" placeholder="Name" class="border px-3 py-2 rounded" />
+          <select id="ovCategory" class="border px-3 py-2 rounded">
+            <option value="">Kategorie wählen</option>
+            <option value="Wohnen">🏠 Wohnen</option>
+            <option value="Technik">💻 Technik</option>
+            <option value="Versicherung">🛡️ Versicherung</option>
+            <option value="Freizeit">🎧 Freizeit</option>
+            <option value="Gesundheit">💊 Gesundheit</option>
+            <option value="Sonstiges">📦 Sonstiges</option>
+            <option value="custom">➕ Eigene Kategorie</option>
+          </select>
+
+          <!-- Verstecktes Inputfeld für eigene Kategorie -->
+          <input
+            id="customCategoryInput"
+            type="text"
+            placeholder="Eigene Kategorie eingeben"
+            class="border px-3 py-2 rounded hidden"
+          />
+
+          <select id="ovType" class="border px-3 py-2 rounded">
+            <option value="fix">Fixkosten</option>
+            <option value="jährlich">Jährliche Kosten</option>
+            <option value="variabel">Variable Kosten</option>
+          </select>
+
+          <button class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700" type="submit">
+            Speichern
+          </button>
+
+          <button
+            id="closeOverlay"
+            type="button"
+            class="py-2 rounded bg-gray-300 hover:bg-gray-400"
+          >
+            Abbrechen
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/frontend/js/ui/layout.js"></script>
+    <script type="module" src="/frontend/js/main.js"></script>
+  </body>
+</html>

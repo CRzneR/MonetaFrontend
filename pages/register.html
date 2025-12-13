@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moneta – Registrierung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+      <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Registrieren</h1>
+
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Benutzername</label>
+          <input
+            type="text"
+            id="username"
+            required
+            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">E-Mail</label>
+          <input
+            type="email"
+            id="email"
+            required
+            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Passwort</label>
+          <input
+            type="password"
+            id="password"
+            required
+            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="passwordConfirm" class="block text-sm font-medium text-gray-700"
+            >Passwort wiederholen</label
+          >
+          <input
+            type="password"
+            id="passwordConfirm"
+            required
+            class="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+        >
+          Registrieren
+        </button>
+      </form>
+
+      <p class="text-sm text-gray-500 mt-4 text-center">
+        Schon registriert?
+        <a href="login.html" class="text-blue-600 hover:underline">Hier anmelden</a>
+      </p>
+    </div>
+
+    <script>
+      document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const passwordConfirm = document.getElementById("passwordConfirm").value;
+
+        if (password !== passwordConfirm) {
+          alert("❌ Passwörter stimmen nicht überein!");
+          return;
+        }
+
+        const API_BASE = window.location.hostname === "localhost" ? "http://localhost:5001" : "";
+
+        try {
+          const res = await fetch(`${API_BASE}/api/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, email, password }),
+          });
+
+          const text = await res.text();
+          let data = {};
+          try {
+            data = JSON.parse(text);
+          } catch {
+            console.error("Ungültige JSON-Antwort:", text);
+          }
+
+          if (!res.ok) {
+            alert(data.message || "❌ Registrierung fehlgeschlagen!");
+            return;
+          }
+
+          alert("✅ Registrierung erfolgreich! Du wirst weitergeleitet...");
+          window.location.href = "login.html";
+        } catch (err) {
+          console.error("Fehler bei Registrierung:", err);
+          alert("🚫 Keine Verbindung zum Server möglich!");
+        }
+      });
+    </script>
+  </body>
+</html>

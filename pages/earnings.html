@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Einnahmen - Moneta</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      if (!localStorage.getItem("token")) {
+        window.location.href = "login.html";
+      }
+    </script>
+  </head>
+
+  <body class="flex h-screen bg-gray-100" data-page="income">
+    <div id="sidebar"></div>
+    <!-- Hauptinhalt -->
+    <main class="flex-1 ml-64">
+      <div class="h-12 bg-gray-600 flex justify-between px-4 text-white space-x-4">
+        <div class="flex items-center justify-center">
+          <p>Monatliche Kosten</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="px-4 py-6 border-t border-gray-700">
+            <button
+              id="logoutBtn"
+              class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
+            >
+              <i data-lucide="log-out"></i>
+              Logout
+            </button>
+          </div>
+          <div class="text-gray-300 hover:text-white cursor-pointer">🔔</div>
+          <p>Name</p>
+          <img
+            src="https://via.placeholder.com/32"
+            alt="Profilbild"
+            class="w-8 h-8 rounded-full border border-gray-400"
+          />
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="mx-20 mt-12">
+        <!-- Einnahmen Container -->
+        <div id="incomeContainer" class="flex flex-wrap gap-4 mb-6">
+          <div
+            id="addIncomeBtn"
+            class="h-32 w-32 bg-gray-200 border border-gray-400 p-4 rounded-xl cursor-pointer hover:bg-gray-300 flex items-center justify-center text-center"
+          >
+            Neue Einnahmen hinzufügen
+          </div>
+        </div>
+
+        <!-- Overlay -->
+        <div
+          id="incomeOverlay"
+          class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+        >
+          <div class="bg-white p-6 rounded-lg w-96 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold mb-4">Neue Einnahme hinzufügen</h3>
+
+            <form id="incomeForm" class="space-y-4">
+              <input
+                type="text"
+                id="incomeSource"
+                placeholder="Quelle"
+                required
+                class="border border-gray-300 rounded px-3 py-2 w-full"
+              />
+
+              <input
+                type="text"
+                id="incomeAmount"
+                placeholder="Betrag (€)"
+                required
+                class="border border-gray-300 rounded px-3 py-2 w-full"
+              />
+
+              <label for="incomeMonth" class="block text-sm font-medium">Monat</label>
+              <select
+                id="incomeMonth"
+                required
+                class="border border-gray-300 rounded px-3 py-2 w-full"
+              >
+                <option value="">Monat wählen</option>
+                <option value="Jan">Jan</option>
+                <option value="Feb">Feb</option>
+                <option value="Mär">Mär</option>
+                <option value="Apr">Apr</option>
+                <option value="Mai">Mai</option>
+                <option value="Jun">Jun</option>
+                <option value="Jul">Jul</option>
+                <option value="Aug">Aug</option>
+                <option value="Sep">Sep</option>
+                <option value="Okt">Okt</option>
+                <option value="Nov">Nov</option>
+                <option value="Dez">Dez</option>
+              </select>
+
+              <label for="incomeCategory" class="block text-sm font-medium">Kategorie</label>
+              <select
+                id="incomeCategory"
+                required
+                class="border border-gray-300 rounded px-3 py-2 w-full"
+              >
+                <option value="">Kategorie wählen</option>
+                <option value="Gehalt">Gehalt</option>
+                <option value="Nebeneinkünfte">Nebeneinkünfte</option>
+              </select>
+
+              <div class="flex gap-2 pt-4">
+                <button
+                  type="button"
+                  id="saveIncomeBtn"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex-1"
+                >
+                  Speichern
+                </button>
+
+                <button
+                  type="button"
+                  id="cancelIncomeBtn"
+                  class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded flex-1"
+                >
+                  Abbrechen
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <h2 class="text-xl mb-2 mt-6">Einnahmen-Übersicht</h2>
+        <div class="border border-gray-400 rounded-xl p-6">
+          <canvas id="earningsChart"></canvas>
+        </div>
+      </div>
+    </main>
+    <script src="/frontend/js/ui/layout.js"></script>
+    <script type="module" src="/frontend/js/main.js"></script>
+  </body>
+</html>
