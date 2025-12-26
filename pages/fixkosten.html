@@ -14,21 +14,15 @@
     <div id="sidebar"></div>
 
     <!-- Hauptinhalt -->
-    <main class="flex-1 ml-64">
-      <div class="h-12 bg-gray-600 flex justify-between px-4 text-white space-x-4">
+    <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
+      <div
+        id="pageMenu"
+        class="hidden md:flex h-12 bg-white justify-between px-4 ml-2 text-black border border-gray-300 space-x-4"
+      >
         <div class="flex items-center justify-center">
           <p>Monatliche Kosten</p>
         </div>
         <div class="flex items-center space-x-4">
-          <div class="px-4 py-6 border-t border-gray-700">
-            <button
-              id="logoutBtn"
-              class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
-            >
-              <i data-lucide="log-out"></i>
-              Logout
-            </button>
-          </div>
           <div class="text-gray-300 hover:text-white cursor-pointer">🔔</div>
           <p>Name</p>
           <img
@@ -43,76 +37,115 @@
       <div id="monthsContainer" class="flex justify-between text-xl p-6"></div>
 
       <!-- Dashboard -->
-      <div class="mx-20 mt-12">
+      <div class="mx-4 sm:mx-6 lg:mx-20 mt-6 sm:mt-10">
         <!-- Gesamtkostenübersicht -->
-        <div class="flex gap-4 pb-4">
-          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
-            <p class="text-3xl"><span class="fixKostenSumme">0.00</span> €</p>
-            <p>Fixkosten</p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4">
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="fixKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Fixkosten</p>
           </div>
-          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
-            <p class="text-3xl"><span class="jaehrlicheKostenSumme">0.00</span></p>
-            <p>Jährliche Kosten</p>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="jaehrlicheKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Jährliche Kosten</p>
           </div>
-          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
-            <p class="text-3xl"><span class="variableKostenSumme">0.00</span></p>
-            <p>Variable Kosten</p>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="variableKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Variable Kosten</p>
           </div>
-          <div class="flex-1 border border-gray-400 rounded-xl px-6 py-10 bg-[#696969] text-white">
-            <p class="text-3xl"><span class="gesamtSumme">0.00</span> €</p>
-            <p>Gesamtkosten</p>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="gesamtSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Gesamtkosten</p>
           </div>
         </div>
 
-        <!-- Buttons -->
-        <div class="flex justify-end mb-4">
+        <!-- Add Button -->
+        <div class="mb-6 mt-2">
           <button
-            class="addFixCostBtn border border-gray-400 rounded-full p-1 hover:bg-gray-100"
-            title="Hinzufügen"
+            class="addFixCostBtn w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-white text-base font-medium shadow hover:bg-purple-700 active:scale-[0.98] transition"
+            title="Kosten hinzufügen"
           >
-            <i data-lucide="plus" class="w-4 h-4"></i>
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            <span>Kosten hinzufügen</span>
           </button>
         </div>
 
-        <!-- Tabellen -->
-        <h2 class="pt-8 text-xl">Monatliche Fixkosten</h2>
-        <table id="fixKostenTabelle" class="min-w-full">
-          <thead>
-            <tr class="bg-gray-400">
-              <th class="border px-2 py-1">Kosten (€)</th>
-              <th class="border px-2 py-1">Name</th>
-              <th class="border px-2 py-1">Kategorie</th>
-              <th class="border px-2 py-1"></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <!-- Monatliche Fixkosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">
+          Monatliche Fixkosten
+        </h2>
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="fixKostenTabelle" class="min-w-[720px] w-full text-sm sm:text-base">
+            <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
+                <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+          </table>
+        </div>
 
-        <h2 class="pt-8 text-xl">Jährliche Kosten</h2>
-        <table id="jaehrlicheKostenTabelle" class="min-w-full">
-          <thead>
-            <tr class="bg-gray-400">
-              <th class="border px-2 py-1">Kosten (€)</th>
-              <th class="border px-2 py-1">Name</th>
-              <th class="border px-2 py-1">Kategorie</th>
-              <th class="border px-2 py-1"></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <!-- Jährliche Kosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">
+          Jährliche Kosten
+        </h2>
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="jaehrlicheKostenTabelle" class="min-w-[720px] w-full text-sm sm:text-base">
+            <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
+                <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+          </table>
+        </div>
 
-        <h2 class="pt-8 text-xl">Variable Kosten</h2>
-        <table id="variableKostenTabelle" class="min-w-full">
-          <thead>
-            <tr class="bg-gray-400">
-              <th class="border px-2 py-1">Kosten (€)</th>
-              <th class="border px-2 py-1">Name</th>
-              <th class="border px-2 py-1">Kategorie</th>
-              <th class="border px-2 py-1"></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <!-- Variable Kosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">Variable Kosten</h2>
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="variableKostenTabelle" class="min-w-[720px] w-full text-sm sm:text-base">
+            <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
+                <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
 

@@ -9,28 +9,22 @@
     <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
   </head>
 
-  <body class="flex h-screen bg-gray-100" data-page="fixcosts">
+  <body class="flex h-screen bg-[#F5F5F5]" data-page="fixcosts">
     <!-- Sidebar -->
     <div id="sidebar"></div>
 
     <!-- Hauptinhalt -->
-    <main class="flex-1 ml-64">
-      <div class="h-12 bg-gray-600 flex justify-between px-4 text-white space-x-4">
+    <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
+      <div
+        id="pageMenu"
+        class="hidden md:flex h-12 bg-white justify-between px-4 ml-2 text-black border border-gray-300 space-x-4"
+      >
         <div class="flex items-center justify-center">
           <p>Dashboard</p>
         </div>
         <div class="flex items-center space-x-4">
-          <div class="px-4 py-6 border-t border-gray-700">
-            <button
-              id="logoutBtn"
-              class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
-            >
-              <i data-lucide="log-out"></i>
-              Logout
-            </button>
-          </div>
           <div class="text-gray-300 hover:text-white cursor-pointer">🔔</div>
-          <p>Name</p>
+          <p id="username" class="font-medium"></p>
           <img
             src="https://via.placeholder.com/32"
             alt="Profilbild"
@@ -38,10 +32,22 @@
           />
         </div>
       </div>
+
+      <!-- Dashboard -->
       <div class="grid grid-cols-6 grid-rows-6 gap-[5px]">
-        <div class="row-start-1 row-end-3 col-start-4 col-end-7"></div>
+        <div class="row-start-1 row-end-3 col-start-4 col-end-7">
+          <div class="bg-white rounded-xl p-4 shadow">
+            <h2 class="text-lg font-semibold mb-3">Kosten nach Kategorie</h2>
+            <canvas id="categoryChart" height="140"></canvas>
+          </div>
+        </div>
         <div class="row-start-1 row-end-4 col-start-1 col-end-4"></div>
-        <div class="row-start-3 row-end-5 col-start-4 col-end-7"></div>
+        <div class="row-start-3 row-end-5 col-start-4 col-end-7">
+          <div class="flex-1 border border-gray-300 rounded-xl px-6 py-10 bg-white text-black">
+            <p class="text-3xl"><span class="gesamtSumme">0.00</span> €</p>
+            <p>Gesamtkosten</p>
+          </div>
+        </div>
         <div class="row-start-4 row-end-5 col-start-1 col-end-4"></div>
         <div class="row-start-5 row-end-7 col-start-1 col-end-4"></div>
         <div class="row-start-5 row-end-7 col-start-4 col-end-5"></div>
@@ -52,6 +58,7 @@
     <!-- Scripts -->
     <!-- am Ende deiner HTML -->
     <script src="../js/ui/layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../js/main.js"></script>
   </body>
 </html>
