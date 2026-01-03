@@ -23,41 +23,26 @@
   <body class="flex h-screen bg-gray-100" data-page="income">
     <div id="sidebar"></div>
     <!-- Hauptinhalt -->
-    <main class="flex-1 ml-64">
-      <div class="h-12 bg-gray-600 flex justify-between px-4 text-white space-x-4">
-        <div class="flex items-center justify-center">
-          <p>Monatliche Kosten</p>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="px-4 py-6 border-t border-gray-700">
-            <button
-              id="logoutBtn"
-              class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition"
-            >
-              <i data-lucide="log-out"></i>
-              Logout
-            </button>
-          </div>
-          <div class="text-gray-300 hover:text-white cursor-pointer">🔔</div>
-          <p>Name</p>
-          <img
-            src="https://via.placeholder.com/32"
-            alt="Profilbild"
-            class="w-8 h-8 rounded-full border border-gray-400"
-          />
-        </div>
-      </div>
-
+    <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
       <!-- Dashboard -->
       <div class="mx-20 mt-12">
         <!-- Einnahmen Container -->
-        <div id="incomeContainer" class="flex flex-wrap gap-4 mb-6">
+        <div class="flex flex-wrap gap-4 mb-6">
           <div
             id="addIncomeBtn"
             class="h-32 w-32 bg-gray-200 border border-gray-400 p-4 rounded-xl cursor-pointer hover:bg-gray-300 flex items-center justify-center text-center"
           >
             Neue Einnahmen hinzufügen
           </div>
+
+          <div id="incomeContainer" class="flex flex-wrap gap-4"></div>
+        </div>
+
+        <hr class="border-t border-gray-300 my-6" />
+
+        <div class="flex gap-4">
+          <div id="arvgIncome" class="h-32 bg-white border border-gray-300 rounded-xl p-4"></div>
+          <div id="sideIncomeMoM" class="h-32 bg-white border border-gray-300 rounded-xl p-4"></div>
         </div>
 
         <!-- Overlay -->
