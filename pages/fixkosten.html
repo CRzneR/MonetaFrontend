@@ -7,6 +7,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 
   <body class="flex h-screen bg-gray-100" data-page="fixcosts">
@@ -15,11 +16,10 @@
 
     <!-- Hauptinhalt -->
     <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
-      <!-- Monate -->
-      <div id="monthsContainer" class="flex justify-between text-xl p-6"></div>
-
       <!-- Dashboard -->
-      <div class="mx-4 sm:mx-6 lg:mx-20 mt-6 sm:mt-10">
+      <div class="mx-4 sm:mx-6 lg:mx-6 mt-6 sm:mt-10">
+        <!-- Monate -->
+        <div id="monthsContainer" class="flex justify-between text-xl p-6"></div>
         <!-- Gesamtkostenübersicht -->
 
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4">
@@ -80,6 +80,7 @@
             <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
               <tr>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Abgebucht (€)</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
                 <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
@@ -100,6 +101,7 @@
             <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
               <tr>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Abgebucht (€)</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
                 <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
@@ -118,6 +120,7 @@
             <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
               <tr>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Abgebucht (€)</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
                 <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
                 <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
@@ -127,6 +130,10 @@
               <!-- JS fügt hier Zeilen ein -->
             </tbody>
           </table>
+        </div>
+        <!-- Kategorien Diagramm -->
+        <div class="w-96 h-96 bg-white rounded-xl mt-12 p-10">
+          <canvas id="categoryChart" height="140"></canvas>
         </div>
       </div>
     </main>
