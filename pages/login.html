@@ -57,11 +57,14 @@
         const errorMsg = document.getElementById("errorMsg");
         const button = document.getElementById("loginButton");
 
+        //  BACKEND-URL (Render)
+        const API = "https://monetabackend.onrender.com";
+
         if (!form) return;
 
-        // ⭐ Optional: Wenn bereits eingeloggt → weiterleiten
+        // Bereits eingeloggt? → Weiterleitung
         try {
-          const check = await fetch("/api/auth/me", {
+          const check = await fetch(`${API}/api/auth/me`, {
             credentials: "include",
           });
 
@@ -90,23 +93,32 @@
           button.textContent = "Wird geprüft...";
 
           try {
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch(`${API}/api/auth/login`, {
               method: "POST",
-              credentials: "include", // ⭐ wichtig für Session-Cookie
+              credentials: "include", //  für Session-Cookie
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
             });
 
-            const data = await res.json();
+            //  Sichere JSON-Verarbeitung
+            let data = null;
+            const contentType = res.headers.get("content-type");
+
+            if (contentType && contentType.includes("application/json")) {
+              data = await res.json();
+            } else {
+              const text = await res.text();
+              console.error("Server lieferte kein JSON:", text);
+            }
 
             if (!res.ok) {
-              errorMsg.textContent = data.message || "❌ Login fehlgeschlagen!";
+              errorMsg.textContent = (data && data.message) || "❌ Login fehlgeschlagen!";
               errorMsg.classList.remove("hidden");
               return;
             }
 
-            // ✅ Erfolg — Session-Cookie wurde gesetzt
-            window.location.href = "earnings.html";
+            // Erfolg
+            window.location.href = "dashboard.html";
           } catch (err) {
             console.error("Fehler:", err);
             errorMsg.textContent = "🚫 Keine Verbindung zum Server möglich.";
