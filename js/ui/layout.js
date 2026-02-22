@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Sidebar laden
   // =======================
 
-  fetch("/pages/sidebar.html", { cache: "no-store" })
+  fetch("/sidebar.html", { cache: "no-store" })
     .then((res) => {
       if (!res.ok) throw new Error(`sidebar.html konnte nicht geladen werden: ${res.status}`);
       return res.text();
