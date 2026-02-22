@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -9,36 +9,25 @@
     <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
   </head>
 
-  <body class="flex h-screen bg-[#F5F5F5]" data-page="fixcosts">
-    <!-- Sidebar -->
+  <body
+    class="flex h-screen bg-[linear-gradient(135deg,#f8fafc_0%,#eef4ff_40%,#e6eeff_100%)]"
+    data-page="fixcosts"
+  >
+    <!-- Sidebar muss existieren -->
     <div id="sidebar"></div>
 
-    <!-- Hauptinhalt -->
+    <!-- Hauptinhalt: PageMenu wird per JS in main.prepend() eingefügt -->
     <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
-      <!-- Dashboard -->
-      <div class="grid grid-cols-6 grid-rows-6 gap-[5px]">
-        <div class="row-start-1 row-end-3 col-start-4 col-end-7">
-          <div class="bg-white rounded-xl p-4 shadow">
-            <h2 class="text-lg font-semibold mb-3">Kosten nach Kategorie</h2>
-            <canvas id="categoryChart" height="140"></canvas>
-          </div>
+      <!-- Dein Content -->
+      <div class="bg-white rounded-xl p-4 shadow h-80">
+        <h2 class="text-lg font-semibold mb-3">Kosten nach Kategorie</h2>
+        <div class="relative h-64">
+          <canvas id="categoryChart" class="w-full h-full"></canvas>
         </div>
-        <div class="row-start-1 row-end-4 col-start-1 col-end-4"></div>
-        <div class="row-start-3 row-end-5 col-start-4 col-end-7">
-          <div class="flex-1 border border-gray-300 rounded-xl px-6 py-10 bg-white text-black">
-            <p class="text-3xl"><span class="gesamtSumme">0.00</span> €</p>
-            <p>Gesamtkosten</p>
-          </div>
-        </div>
-        <div class="row-start-4 row-end-5 col-start-1 col-end-4"></div>
-        <div class="row-start-5 row-end-7 col-start-1 col-end-4"></div>
-        <div class="row-start-5 row-end-7 col-start-4 col-end-5"></div>
-        <div class="row-start-5 row-end-7 col-start-5 col-end-7"></div>
       </div>
     </main>
 
     <!-- Scripts -->
-    <!-- am Ende deiner HTML -->
     <script src="../js/ui/layout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../js/main.js"></script>

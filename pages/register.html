@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -69,6 +69,11 @@
     </div>
 
     <script>
+      const API_BASE =
+        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+          ? "http://localhost:5001"
+          : "https://monetabackend.onrender.com";
+
       document.getElementById("registerForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -82,33 +87,43 @@
           return;
         }
 
-        const API_BASE =
-          window.location.hostname === "localhost"
-            ? "http://localhost:5001"
-            : "https://monetabackend.onrender.com"; //  ← anpassen
-
         try {
-          const res = await fetch(`${API_BASE}/api/auth/register`, {
+          // ======================
+          // Registrierung
+          // ======================
+          const registerRes = await fetch(`${API_BASE}/api/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password }),
           });
 
-          const text = await res.text();
-          let data = {};
-          try {
-            data = JSON.parse(text);
-          } catch {
-            console.error("Ungültige JSON-Antwort:", text);
-          }
+          const registerData = await registerRes.json();
 
-          if (!res.ok) {
-            alert(data.message || "❌ Registrierung fehlgeschlagen!");
+          if (!registerRes.ok) {
+            alert(registerData.message || "❌ Registrierung fehlgeschlagen!");
             return;
           }
 
-          alert("✅ Registrierung erfolgreich! Du wirst weitergeleitet...");
-          window.location.href = "login.html";
+          // ======================
+          // Auto-Login (Session)
+          // ======================
+          const loginRes = await fetch(`${API_BASE}/api/auth/login`, {
+            method: "POST",
+            credentials: "include", // ⭐ wichtig für Session-Cookie
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const loginData = await loginRes.json();
+
+          if (!loginRes.ok) {
+            alert("Registriert, aber Login fehlgeschlagen.");
+            window.location.href = "login.html";
+            return;
+          }
+
+          alert("✅ Registrierung erfolgreich!");
+          window.location.href = "earnings.html"; // oder dashboard.html
         } catch (err) {
           console.error("Fehler bei Registrierung:", err);
           alert("🚫 Keine Verbindung zum Server möglich!");

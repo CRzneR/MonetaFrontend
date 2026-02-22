@@ -1,57 +1,60 @@
 // =======================================
-// EINNAHMEN – FRONTEND LOGIK
+// EINNAHMEN – FRONTEND LOGIK (Session Auth)
 // =======================================
 
-// API-Basis korrekt bestimmen
-const API_BASE =
-  location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "http://localhost:5001" // lokal
-    : "https://monetabackend.onrender.com"; // Produktion
-
-const INCOME_URL = `${API_BASE}/api/income`;
+const INCOME_URL = "/api/income";
 
 let earningsChart = null;
 
 const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
 // =======================================
-// EXPORTIERTE INIT-FUNKTION
+// 🔐 Session prüfen
 // =======================================
-export function initIncomePage() {
-  // Zugriff nur mit Login
-  if (!localStorage.getItem("token")) {
-    window.location.href = "login.html";
-    return;
+async function ensureLoggedIn() {
+  const res = await fetch("/api/auth/me", {
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    window.location.href = "/pages/login.html";
+    return false;
   }
+
+  return true;
+}
+
+// =======================================
+// INIT
+// =======================================
+export async function initIncomePage() {
+  const ok = await ensureLoggedIn();
+  if (!ok) return;
 
   console.log("📄 Einnahmen-Seite wird initialisiert...");
 
-  // DOM-Elemente
   const addIncomeBtn = document.getElementById("addIncomeBtn");
   const incomeOverlay = document.getElementById("incomeOverlay");
   const cancelIncomeBtn = document.getElementById("cancelIncomeBtn");
   const saveIncomeBtn = document.getElementById("saveIncomeBtn");
 
-  // Events
-  addIncomeBtn.addEventListener("click", () => {
+  addIncomeBtn?.addEventListener("click", () => {
     incomeOverlay.classList.remove("hidden");
   });
 
-  cancelIncomeBtn.addEventListener("click", () => {
+  cancelIncomeBtn?.addEventListener("click", () => {
     incomeOverlay.classList.add("hidden");
   });
 
-  saveIncomeBtn.addEventListener("click", saveIncome);
+  saveIncomeBtn?.addEventListener("click", saveIncome);
 
-  // Globaler Delete-Listener
   document.addEventListener("click", handleDelete);
 
-  // Daten laden
   loadIncome();
 }
 
 // =======================================
-// Einnahme speichern (POST)
+// POST – Einnahme speichern
 // =======================================
 async function saveIncome() {
   const source = document.getElementById("incomeSource").value.trim();
@@ -66,63 +69,49 @@ async function saveIncome() {
 
   const newIncome = { source, amount, month, category };
 
-  try {
-    const res = await fetch(INCOME_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-      body: JSON.stringify(newIncome),
-    });
+  const res = await fetch(INCOME_URL, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(newIncome),
+  });
 
-    if (!res.ok) {
-      alert("❌ Fehler beim Speichern der Einnahme!");
-      return;
-    }
-
-    // UI komplett aktualisieren (inkl. Chart + Stats)
-    await refreshIncomeUI();
-
-    document.getElementById("incomeOverlay").classList.add("hidden");
-    document.getElementById("incomeForm").reset();
-  } catch (err) {
-    console.error("Income POST error:", err);
-    alert("🚫 Server nicht erreichbar.");
+  if (!res.ok) {
+    alert("❌ Fehler beim Speichern der Einnahme!");
+    return;
   }
+
+  await refreshIncomeUI();
+
+  document.getElementById("incomeOverlay").classList.add("hidden");
+  document.getElementById("incomeForm").reset();
 }
 
 // =======================================
-// Einnahmen laden (GET)
+// GET – Einnahmen laden
 // =======================================
 async function loadIncome() {
-  try {
-    await refreshIncomeUI();
-  } catch (err) {
-    console.error("Load income error:", err);
-  }
+  await refreshIncomeUI();
 }
 
 // =======================================
-// UI komplett neu rendern (Boxen + Chart + Stats)
+// UI neu rendern
 // =======================================
 async function refreshIncomeUI() {
   const res = await fetch(INCOME_URL, {
-    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    credentials: "include",
   });
 
   const incomes = await res.json();
 
   renderIncomeBoxes(incomes);
   renderChart(incomes);
-
-  // Stats in Divs
-  displayMonthlyAverage(incomes); // -> div#arvgIncome
-  displaySideIncomeMoM(incomes); // -> div#sideIncomeMoM
+  displayMonthlyAverage(incomes);
+  displaySideIncomeMoM(incomes);
 }
 
 // =======================================
-// Einnahme-Boxen komplett rendern (Container leeren, dann neu)
+// Einnahme-Boxen
 // =======================================
 function renderIncomeBoxes(incomes) {
   const container = document.getElementById("incomeContainer");
@@ -132,9 +121,6 @@ function renderIncomeBoxes(incomes) {
   incomes.forEach(addIncomeBox);
 }
 
-// =======================================
-// Einzelne Einnahme-Box in die UI einfügen
-// =======================================
 function addIncomeBox(inc) {
   const container = document.getElementById("incomeContainer");
   if (!container) return;
@@ -158,7 +144,7 @@ function addIncomeBox(inc) {
 }
 
 // =======================================
-// DELETE – Einnahme löschen
+// DELETE
 // =======================================
 async function handleDelete(e) {
   if (!e.target.classList.contains("deleteIncomeBtn")) return;
@@ -167,80 +153,54 @@ async function handleDelete(e) {
 
   if (!confirm("Diese Einnahme wirklich löschen?")) return;
 
-  try {
-    const res = await fetch(`${INCOME_URL}/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+  const res = await fetch(`${INCOME_URL}/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
 
-    if (!res.ok) {
-      alert("Fehler beim Löschen!");
-      return;
-    }
-
-    // UI komplett aktualisieren (inkl. Chart + Stats)
-    await refreshIncomeUI();
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Serverfehler beim Löschen!");
+  if (!res.ok) {
+    alert("Fehler beim Löschen!");
+    return;
   }
+
+  await refreshIncomeUI();
 }
 
 // =======================================
-// 🧮 Monatsdurchschnitt berechnen (Summe / Anzahl Monate mit Einträgen)
+// Statistik-Funktionen
 // =======================================
 function calculateMonthlyAverage(incomes) {
   if (!incomes.length) return 0;
 
   const monthsWithData = new Set();
-  let totalSum = 0;
+  let total = 0;
 
-  incomes.forEach((inc) => {
-    totalSum += Number(inc.amount) || 0;
-    if (inc.month) monthsWithData.add(inc.month);
+  incomes.forEach((i) => {
+    total += Number(i.amount) || 0;
+    if (i.month) monthsWithData.add(i.month);
   });
 
-  const monthCount = monthsWithData.size || 1;
-  return totalSum / monthCount;
+  return total / (monthsWithData.size || 1);
 }
 
-// =======================================
-// Monatsdurchschnitt anzeigen -> div#arvgIncome
-// =======================================
 function displayMonthlyAverage(incomes) {
   const container = document.getElementById("arvgIncome");
   if (!container) return;
 
   const avg = calculateMonthlyAverage(incomes);
 
-  // Reset
-  container.innerHTML = "";
-
-  // --- Zeile 1: Label ---
-  const label = document.createElement("div");
-  label.className = "text-sm text-gray-500";
-  label.textContent = "Ø Einnahmen pro Monat";
-
-  // --- Zeile 2: Wert ---
-  const value = document.createElement("div");
-  value.className = "text-2xl font-bold text-gray-900";
-  value.textContent = `${avg.toFixed(2)} €`;
-
-  container.appendChild(label);
-  container.appendChild(value);
+  container.innerHTML = `
+    <div class="text-sm text-gray-500">Ø Einnahmen pro Monat</div>
+    <div class="text-2xl font-bold">${avg.toFixed(2)} €</div>
+  `;
 }
 
-// =======================================
-// Nebeneinkünfte pro Monat aufsummieren
-// =======================================
 function getSideTotalsByMonth(incomes) {
   const totals = {};
   MONTHS.forEach((m) => (totals[m] = 0));
 
   incomes.forEach((inc) => {
-    if (inc.category === "Nebeneinkünfte" && totals.hasOwnProperty(inc.month)) {
+    if (inc.category === "Nebeneinkünfte") {
       totals[inc.month] += Number(inc.amount) || 0;
     }
   });
@@ -248,79 +208,46 @@ function getSideTotalsByMonth(incomes) {
   return totals;
 }
 
-// =======================================
-// 📈 Nebeneinkünfte %-Änderung zum Vormonat -> div#sideIncomeMoM
-// =======================================
 function displaySideIncomeMoM(incomes) {
   const container = document.getElementById("sideIncomeMoM");
   if (!container) return;
 
-  const sideTotals = getSideTotalsByMonth(incomes);
+  const totals = getSideTotalsByMonth(incomes);
 
-  const lastIdx = [...MONTHS.keys()].filter((idx) => sideTotals[MONTHS[idx]] > 0).pop();
+  const lastIdx = [...MONTHS.keys()].filter((i) => totals[MONTHS[i]] > 0).pop();
 
   if (lastIdx === undefined) {
-    container.textContent = "Nebeneinkünfte: keine Daten vorhanden.";
+    container.textContent = "Nebeneinkünfte: keine Daten.";
     return;
   }
 
-  const currMonth = MONTHS[lastIdx];
-  const prevMonth = MONTHS[(lastIdx + 11) % 12];
-
-  const curr = sideTotals[currMonth];
-  const prev = sideTotals[prevMonth];
-
-  // Reset
-  container.innerHTML = "";
-
-  // --- Zeile 1: Beschreibung ---
-  const label = document.createElement("div");
-  label.className = "text-sm text-gray-500";
-  label.textContent = `Nebeneinkünfte ${prevMonth} → ${currMonth}`;
-  container.appendChild(label);
-
-  // --- Zeile 2: Prozentwert ---
-  const value = document.createElement("div");
-  value.className = "text-2xl font-bold";
+  const curr = totals[MONTHS[lastIdx]];
+  const prev = totals[MONTHS[(lastIdx + 11) % 12]];
 
   if (prev === 0) {
-    value.classList.add("text-gray-400");
-    value.textContent = "–";
-    container.appendChild(value);
+    container.textContent = "–";
     return;
   }
 
   const pct = ((curr - prev) / prev) * 100;
-  const sign = pct > 0 ? "+" : "";
-  const arrow = pct > 0 ? "▲" : pct < 0 ? "▼" : "▬";
-
-  value.classList.add(pct > 0 ? "text-green-600" : pct < 0 ? "text-red-600" : "text-gray-500");
-
-  value.textContent = `${arrow} ${sign}${pct.toFixed(1)}%`;
-
-  container.appendChild(value);
+  container.textContent = `${pct > 0 ? "▲" : "▼"} ${pct.toFixed(1)}%`;
 }
 
 // =======================================
-// Chart erstellen
+// Chart
 // =======================================
 function renderChart(incomes) {
   const salaryTotals = {};
   const sideTotals = {};
 
-  // Startwerte auf 0 setzen
   MONTHS.forEach((m) => {
     salaryTotals[m] = 0;
     sideTotals[m] = 0;
   });
 
-  // Einnahmen sortieren
   incomes.forEach((i) => {
-    if (i.category === "Gehalt") {
-      salaryTotals[i.month] += Number(i.amount) || 0;
-    } else if (i.category === "Nebeneinkünfte") {
-      sideTotals[i.month] += Number(i.amount) || 0;
-    }
+    if (i.category === "Gehalt") salaryTotals[i.month] += Number(i.amount) || 0;
+    else if (i.category === "Nebeneinkünfte") sideTotals[i.month] += Number(i.amount) || 0;
   });
 
   const ctx = document.getElementById("earningsChart");
@@ -333,26 +260,13 @@ function renderChart(incomes) {
     data: {
       labels: MONTHS,
       datasets: [
-        {
-          label: "Gehalt",
-          data: Object.values(salaryTotals),
-          backgroundColor: "rgba(54, 162, 235, 0.85)", // Blau
-          stack: "incomeStack",
-        },
-        {
-          label: "Nebeneinkünfte",
-          data: Object.values(sideTotals),
-          backgroundColor: "rgba(255, 159, 64, 0.85)", // Orange
-          stack: "incomeStack",
-        },
+        { label: "Gehalt", data: Object.values(salaryTotals), stack: "s" },
+        { label: "Nebeneinkünfte", data: Object.values(sideTotals), stack: "s" },
       ],
     },
     options: {
       responsive: true,
-      scales: {
-        x: { stacked: true },
-        y: { stacked: true, beginAtZero: true },
-      },
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
     },
   });
 }

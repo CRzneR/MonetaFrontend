@@ -23,12 +23,35 @@ function makeColors(n) {
   return colors;
 }
 
+function ensureCanvasHasHeight(canvas) {
+  // Wenn Canvas/Parent keine Höhe hat => Chart wirkt "unsichtbar"
+  const h = parseFloat(getComputedStyle(canvas).height || "0");
+  const parent = canvas.parentElement;
+  const parentH = parent ? parseFloat(getComputedStyle(parent).height || "0") : 0;
+
+  if ((h <= 0 || Number.isNaN(h)) && (parentH <= 0 || Number.isNaN(parentH))) {
+    // Fallback: sichere Mindesthöhe
+    canvas.style.display = "block";
+    canvas.style.width = "100%";
+    canvas.style.height = "260px";
+  }
+}
+
 export function updateCategoryCostsChart(
   costs,
-  { canvasId = "categoryChart", monthLabel, year } = {}
+  { canvasId = "categoryChart", monthLabel, year } = {},
 ) {
   const canvas = document.getElementById(canvasId);
-  if (!canvas || typeof Chart === "undefined") return;
+  if (!canvas) {
+    console.warn(`[updateCategoryCostsChart] Canvas #${canvasId} nicht gefunden.`);
+    return;
+  }
+  if (typeof Chart === "undefined") {
+    console.warn("[updateCategoryCostsChart] Chart.js ist nicht geladen (Chart ist undefined).");
+    return;
+  }
+
+  ensureCanvasHasHeight(canvas);
 
   // ✅ vorhandenes Chart auf diesem Canvas zerstören
   const existing = Chart.getChart(canvas);
@@ -40,7 +63,7 @@ export function updateCategoryCostsChart(
   // Abgebucht (für den ausgewählten Monat) zählt, sonst Kosten
   const totals = {};
   for (const c of costs || []) {
-    const cat = (c?.kategorie || "Unbekannt").trim();
+    const cat = String(c?.kategorie || "Unbekannt").trim();
     const kosten = Number(c?.kosten) || 0;
 
     const abg = key && c?.abgebuchtByMonth ? c.abgebuchtByMonth[key] : null;
@@ -61,7 +84,9 @@ export function updateCategoryCostsChart(
 
   const bg = makeColors(labels.length);
 
-  new Chart(canvas, {
+  const ctx = canvas.getContext("2d");
+
+  new Chart(ctx, {
     type: "doughnut",
     data: {
       labels,
@@ -75,8 +100,11 @@ export function updateCategoryCostsChart(
     },
     options: {
       responsive: true,
+      // ✅ entscheidend für Layout in Cards/Grid (sonst 0-Höhe / komische Skalierung)
+      maintainAspectRatio: false,
+
       plugins: {
-        legend: { position: "bottom" },
+        legend: { position: "right" },
         tooltip: {
           callbacks: {
             label: (ctx) => `${ctx.label}: ${Number(ctx.parsed || 0).toFixed(2)} €`,
