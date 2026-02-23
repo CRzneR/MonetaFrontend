@@ -90,6 +90,7 @@
           try {
             const res = await fetch(`${API}/api/auth/login`, {
               method: "POST",
+              mode: "cors",
               credentials: "include", //  für Session-Cookie
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
