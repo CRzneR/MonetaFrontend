@@ -5,39 +5,58 @@ import { initMonthSelector } from "./ui/monthSelector.js";
 import { createPageMenu } from "./ui/topBar.js";
 import { updateCategoryCostsChart } from "./ui/categoryCostsChart.js";
 
+const API = "https://monetabackend.onrender.com";
+
 const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
 // ============================
 // 🔐 AUTH CHECK
 // ============================
 async function checkAuth() {
-  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
-    credentials: "include", // sendet Session-Cookie
-  });
+  try {
+    const res = await fetch(`${API}/api/auth/me`, {
+      credentials: "include",
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    window.location.href = "login.html";
-    throw new Error("Nicht eingeloggt");
+    if (!res.ok) {
+      redirectToLogin();
+      throw new Error("Nicht eingeloggt");
+    }
+
+    return await res.json();
+  } catch (err) {
+    redirectToLogin();
+    throw err;
   }
+}
 
-  return await res.json(); // User-Daten
+function redirectToLogin() {
+  if (!window.location.pathname.includes("login.html")) {
+    window.location.href = "login.html";
+  }
 }
 
 // ============================
-// Costs laden (Session-Version)
+// Costs laden
 // ============================
 async function fetchCosts() {
-  const res = await fetch("/api/costs", {
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(`${API}/api/costs`, {
+      credentials: "include",
+    });
 
-  if (!res.ok) {
-    console.warn("[main] Konnte costs nicht laden:", res.status);
+    if (!res.ok) {
+      console.warn("[main] Konnte costs nicht laden:", res.status);
+      return [];
+    }
+
+    const json = await res.json();
+    return json.costs ?? json;
+  } catch (err) {
+    console.error("Costs Fehler:", err);
     return [];
   }
-
-  const json = await res.json();
-  return json.costs ?? json;
 }
 
 // ============================
@@ -65,16 +84,19 @@ async function initDashboardPage() {
 // ============================
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 🔐 1. Prüfen ob eingeloggt
+    // 🔐 1. Auth prüfen
     const user = await checkAuth();
 
     const page = document.body.dataset.page;
 
+    // ============================
+    // UI init
+    // ============================
     initSidebar();
     initMonthSelector();
 
     // ============================
-    // PageMenu dynamisch einfügen
+    // PageMenu
     // ============================
     const pageTitles = {
       dashboard: "Dashboard",
@@ -91,22 +113,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ============================
-    // Seiten-spezifische Logik
+    // Seitenlogik
     // ============================
-    if (page === "fixcosts") {
-      initFixCostPage();
-    }
-
-    if (page === "income") {
-      initIncomePage();
-    }
-
-    if (page === "dashboard") {
-      initDashboardPage();
-    }
+    if (page === "fixcosts") initFixCostPage();
+    if (page === "income") initIncomePage();
+    if (page === "dashboard") initDashboardPage();
 
     // ============================
-    // Username aus Server
+    // Username anzeigen
     // ============================
     const el = document.getElementById("username");
     if (el) {
@@ -114,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ============================
-    // PageMenu Events
+    // Profile Button
     // ============================
     const profileBtn = document.getElementById("profileBtn");
     if (profileBtn) {
@@ -123,6 +137,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
 
+    // ============================
+    // Notifications
+    // ============================
     const notificationBtn = document.getElementById("notificationBtn");
     if (notificationBtn) {
       notificationBtn.addEventListener("click", () => {

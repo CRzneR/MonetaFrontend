@@ -54,24 +54,33 @@
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
         const API = "https://monetabackend.onrender.com";
+
         const form = document.getElementById("loginForm");
         const errorMsg = document.getElementById("errorMsg");
         const button = document.getElementById("loginButton");
 
         if (!form) return;
 
-        // Bereits eingeloggt? → Weiterleitung
+        // =========================
+        // Bereits eingeloggt?
+        // =========================
         try {
           const check = await fetch(`${API}/api/auth/me`, {
             credentials: "include",
             cache: "no-store",
           });
+
           if (check.ok) {
             window.location.href = "dashboard.html";
             return;
           }
-        } catch {}
+        } catch (err) {
+          console.warn("Auth Check fehlgeschlagen:", err);
+        }
 
+        // =========================
+        // Login
+        // =========================
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
 
@@ -91,28 +100,49 @@
             const res = await fetch(`${API}/api/auth/login`, {
               method: "POST",
               mode: "cors",
-              credentials: "include", //  für Session-Cookie
+              credentials: "include", // 🔥 wichtig für Cookie
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
             });
 
             const data = await res.json();
+
             if (!res.ok) {
               showError(data.message || "Login fehlgeschlagen");
               return;
             }
+
+            // =========================
+            // 🔥 WICHTIG: Session/JWT prüfen
+            // =========================
+            const verify = await fetch(`${API}/api/auth/me`, {
+              credentials: "include",
+            });
+
+            if (!verify.ok) {
+              showError("Session konnte nicht erstellt werden.");
+              return;
+            }
+
+            // ✅ Erfolgreich eingeloggt
             window.location.href = "dashboard.html";
-          } catch {
+          } catch (err) {
+            console.error(err);
             showError("Keine Verbindung zum Server.");
           } finally {
             button.disabled = false;
             button.textContent = "Login";
           }
         });
+
+        // =========================
+        // UI Helfer
+        // =========================
         function showError(msg) {
           errorMsg.textContent = msg;
           errorMsg.classList.remove("hidden");
         }
+
         function hideError() {
           errorMsg.classList.add("hidden");
         }

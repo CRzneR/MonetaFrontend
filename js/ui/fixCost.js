@@ -49,22 +49,6 @@ const hasFixCostDom =
 let lastLoadedCosts = [];
 
 // =======================================
-// 🔐 Session-Login prüfen
-// =======================================
-async function ensureLoggedIn() {
-  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    window.location.href = "/pages/login.html";
-    return false;
-  }
-
-  return true;
-}
-
-// =======================================
 // Initialisierung
 // =======================================
 export async function initFixCostPage() {

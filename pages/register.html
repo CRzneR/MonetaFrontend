@@ -69,65 +69,86 @@
     </div>
 
     <script>
-      const API_BASE =
-        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-          ? "http://localhost:5001"
-          : "https://monetabackend.onrender.com";
+      document.addEventListener("DOMContentLoaded", () => {
+        const API = "https://monetabackend.onrender.com";
+        const form = document.getElementById("registerForm");
 
-      document.getElementById("registerForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-        const username = document.getElementById("username").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const passwordConfirm = document.getElementById("passwordConfirm").value;
+          const username = document.getElementById("username").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          const passwordConfirm = document.getElementById("passwordConfirm").value;
 
-        if (password !== passwordConfirm) {
-          alert("❌ Passwörter stimmen nicht überein!");
-          return;
-        }
-
-        try {
-          // ======================
-          // Registrierung
-          // ======================
-          const registerRes = await fetch(`${API_BASE}/api/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email, password }),
-          });
-
-          const registerData = await registerRes.json();
-
-          if (!registerRes.ok) {
-            alert(registerData.message || "❌ Registrierung fehlgeschlagen!");
+          if (!username || !email || !password) {
+            alert("Bitte alle Felder ausfüllen.");
             return;
           }
 
-          // ======================
-          // Auto-Login (Session)
-          // ======================
-          const loginRes = await fetch(`${API_BASE}/api/auth/login`, {
-            method: "POST",
-            credentials: "include", // ⭐ wichtig für Session-Cookie
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          });
-
-          const loginData = await loginRes.json();
-
-          if (!loginRes.ok) {
-            alert("Registriert, aber Login fehlgeschlagen.");
-            window.location.href = "login.html";
+          if (password !== passwordConfirm) {
+            alert("❌ Passwörter stimmen nicht überein!");
             return;
           }
 
-          alert("✅ Registrierung erfolgreich!");
-          window.location.href = "earnings.html"; // oder dashboard.html
-        } catch (err) {
-          console.error("Fehler bei Registrierung:", err);
-          alert("🚫 Keine Verbindung zum Server möglich!");
-        }
+          try {
+            // ======================
+            // Registrierung
+            // ======================
+            const registerRes = await fetch(`${API}/api/auth/register`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password }),
+            });
+
+            const registerData = await registerRes.json();
+
+            if (!registerRes.ok) {
+              alert(registerData.message || "❌ Registrierung fehlgeschlagen!");
+              return;
+            }
+
+            // ======================
+            // Auto-Login
+            // ======================
+            const loginRes = await fetch(`${API}/api/auth/login`, {
+              method: "POST",
+              credentials: "include", // 🔥 Cookie speichern
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const loginData = await loginRes.json();
+
+            if (!loginRes.ok) {
+              alert("Registriert, aber Login fehlgeschlagen.");
+              window.location.href = "login.html";
+              return;
+            }
+
+            // ======================
+            // 🔥 Session/JWT prüfen
+            // ======================
+            const verify = await fetch(`${API}/api/auth/me`, {
+              credentials: "include",
+            });
+
+            if (!verify.ok) {
+              alert("Registriert, aber Session konnte nicht erstellt werden.");
+              window.location.href = "login.html";
+              return;
+            }
+
+            // ======================
+            // Erfolgreich eingeloggt
+            // ======================
+            alert("✅ Registrierung erfolgreich!");
+            window.location.href = "dashboard.html";
+          } catch (err) {
+            console.error("Fehler bei Registrierung:", err);
+            alert("🚫 Keine Verbindung zum Server möglich!");
+          }
+        });
       });
     </script>
   </body>

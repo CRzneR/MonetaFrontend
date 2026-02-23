@@ -9,22 +9,6 @@ let earningsChart = null;
 const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
 // =======================================
-// 🔐 Session prüfen
-// =======================================
-async function ensureLoggedIn() {
-  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    window.location.href = "/pages/login.html";
-    return false;
-  }
-
-  return true;
-}
-
-// =======================================
 // INIT
 // =======================================
 export async function initIncomePage() {
