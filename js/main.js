@@ -11,8 +11,8 @@ const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", 
 // 🔐 AUTH CHECK
 // ============================
 async function checkAuth() {
-  const res = await fetch("/api/auth/me", {
-    credentials: "include", // ⭐ sendet Session-Cookie
+  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
+    credentials: "include", // sendet Session-Cookie
   });
 
   if (!res.ok) {

@@ -52,7 +52,7 @@ let lastLoadedCosts = [];
 // 🔐 Session-Login prüfen
 // =======================================
 async function ensureLoggedIn() {
-  const res = await fetch("/api/auth/me", {
+  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
     credentials: "include",
   });
 

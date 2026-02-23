@@ -12,7 +12,7 @@ const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", 
 // 🔐 Session prüfen
 // =======================================
 async function ensureLoggedIn() {
-  const res = await fetch("/api/auth/me", {
+  const res = await fetch("https://monetabackend.onrender.com/api/auth/me", {
     credentials: "include",
   });
 
