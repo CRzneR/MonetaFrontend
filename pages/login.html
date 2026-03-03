@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -78,28 +78,36 @@
         button.textContent = "Wird geprüft...";
 
         try {
+          console.log("🔵 Sende Login an:", `${API_BASE}/api/auth/login`);
+
           const res = await fetch(`${API_BASE}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
           });
 
+          console.log("🟡 Response Status:", res.status);
+
           const data = await res.json();
+
+          console.log("🟢 LOGIN RESPONSE:", data);
+          console.log("🟣 data.token:", data.token);
 
           if (!res.ok) {
             errorMsg.textContent = data.message || "❌ Login fehlgeschlagen!";
             errorMsg.classList.remove("hidden");
-            button.disabled = false;
-            button.textContent = "Login";
             return;
           }
 
-          // ✅ Erfolg
+          // Token speichern
           localStorage.setItem("token", data.token);
+
+          console.log("🟢 Token im localStorage:", localStorage.getItem("token"));
+
           alert("✅ Login erfolgreich!");
           window.location.href = "earnings.html";
         } catch (err) {
-          console.error("Fehler:", err);
+          console.error("🔴 Fehler:", err);
           errorMsg.textContent = "🚫 Keine Verbindung zum Server möglich.";
           errorMsg.classList.remove("hidden");
         } finally {
