@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/pages/(.*)", "destination": "/pages/$1" }
+  ],
+  "redirects": [
+    { "source": "/", "destination": "/pages/dashboard.html", "permanent": false }
+  ]
+}

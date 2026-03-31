@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moneta</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body class="flex h-screen bg-gray-100" data-page="fixcosts">
+    <!-- Sidebar -->
+    <div id="sidebar"></div>
+
+    <!-- Hauptinhalt -->
+    <main class="pt-12 md:pt-0 md:ml-64 p-4 w-full h-full overflow-auto">
+      <!-- Dashboard -->
+      <div class="mx-2 sm:mx-6 lg:mx-6 mt-6 sm:mt-10">
+        <!-- Monate -->
+        <div id="monthsContainer" class="flex justify-between text-xl"></div>
+        <!-- Gesamtkostenübersicht -->
+
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-4">
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="fixKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Fixkosten</p>
+          </div>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="jaehrlicheKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Jährliche Kosten</p>
+          </div>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="variableKostenSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Variable Kosten</p>
+          </div>
+
+          <div
+            class="border border-gray-300 rounded-xl px-4 sm:px-6 py-6 sm:py-10 bg-white text-black"
+          >
+            <p class="text-2xl sm:text-3xl font-semibold">
+              <span class="gesamtSumme">0.00</span> €
+            </p>
+            <p class="text-sm sm:text-base text-gray-600">Gesamtkosten</p>
+          </div>
+        </div>
+
+        <!-- Add Button -->
+        <div class="mb-6 mt-2">
+          <button
+            class="addFixCostBtn w-full flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-white text-base font-medium shadow hover:bg-purple-700 active:scale-[0.98] transition"
+            title="Kosten hinzufügen"
+          >
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            <span>Kosten hinzufügen</span>
+          </button>
+        </div>
+
+        <!-- Monatliche Fixkosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">
+          Monatliche Fixkosten
+        </h2>
+
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="fixKostenTabelle" class="w-full text-xs sm:text-sm md:text-base">
+            
+            <thead class="bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Kosten (€)</th>
+                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">Abgebucht</th>
+                
+                <!-- Name bleibt sichtbar -->
+                <th class="px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">
+                  Name
+                </th>
+
+                <!-- Kategorie optional auf kleinen Screens verstecken -->
+                <th class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-3 text-left font-medium">
+                Kategorie
+              </th>
+
+                <th class="px-2 sm:px-4 py-2 sm:py-3 text-right font-medium"></th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+
+          </table>
+        </div>
+
+        <!-- Jährliche Kosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">
+          Jährliche Kosten
+        </h2>
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="jaehrlicheKostenTabelle" class="min-w-[720px] w-full text-sm sm:text-base">
+            <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Abgebucht (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
+                <th class=" hidden sm:table-cell px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
+                <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Variable Kosten -->
+        <h2 class="pt-6 sm:pt-8 text-lg sm:text-xl font-semibold text-gray-900">Variable Kosten</h2>
+        <div class="mt-3 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+          <table id="variableKostenTabelle" class="min-w-[720px] w-full text-sm sm:text-base">
+            <thead class="sticky top-0 z-10 bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Kosten (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Abgebucht (€)</th>
+                <th class="px-4 py-3 text-left font-medium whitespace-nowrap">Name</th>
+                <th class=" hidden sm:table-cell px-4 py-3 text-left font-medium whitespace-nowrap">Kategorie</th>
+                <th class="px-4 py-3 text-right font-medium whitespace-nowrap"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <!-- JS fügt hier Zeilen ein -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Kategorien Diagramm -->
+        <div class="w-96 h-96 bg-white rounded-xl mt-12 p-10">
+          <canvas id="categoryChart" height="140"></canvas>
+        </div>
+      </div>
+    </main>
+
+    <!-- Overlay -->
+    <div
+      id="fixCostOverlay"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-6 rounded-xl shadow-xl w-96">
+        <h2 class="text-lg font-semibold mb-4">Kosten hinzufügen</h2>
+
+        <form id="overlayFixCostForm" class="flex flex-col gap-4">
+          <input
+            id="ovCost"
+            type="number"
+            placeholder="Kosten (€)"
+            class="border px-3 py-2 rounded"
+          />
+          <input id="ovName" type="text" placeholder="Name" class="border px-3 py-2 rounded" />
+          <select id="ovCategory" class="border px-3 py-2 rounded">
+            <option value="">Kategorie wählen</option>
+            <option value="Wohnen">🏠 Wohnen</option>
+            <option value="Technik">💻 Technik</option>
+            <option value="Versicherung">🛡️ Versicherung</option>
+            <option value="Freizeit">🎧 Freizeit</option>
+            <option value="Gesundheit">💊 Gesundheit</option>
+            <option value="Sonstiges">📦 Sonstiges</option>
+            <option value="custom">➕ Eigene Kategorie</option>
+          </select>
+
+          <!-- Verstecktes Inputfeld für eigene Kategorie -->
+          <input
+            id="customCategoryInput"
+            type="text"
+            placeholder="Eigene Kategorie eingeben"
+            class="border px-3 py-2 rounded hidden"
+          />
+
+          <select id="ovType" class="border px-3 py-2 rounded">
+            <option value="fix">Fixkosten</option>
+            <option value="jährlich">Jährliche Kosten</option>
+            <option value="variabel">Variable Kosten</option>
+          </select>
+
+          <button class="bg-blue-600 text-white py-2 rounded hover:bg-blue-700" type="submit">
+            Speichern
+          </button>
+
+          <button
+            id="closeOverlay"
+            type="button"
+            class="py-2 rounded bg-gray-300 hover:bg-gray-400"
+          >
+            Abbrechen
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/ui/layout.js"></script>
+    <script type="module" src="../js/main.js"></script>
+  </body>
+</html>

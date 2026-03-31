@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – Moneta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-96">
+      <h1 class="text-2xl font-bold mb-4 text-center text-gray-800">Login</h1>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">E-Mail</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="z. B. name@mail.de"
+            required
+            class="border border-gray-300 rounded w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Passwort</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            required
+            class="border border-gray-300 rounded w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="loginButton"
+          class="bg-blue-600 text-white font-semibold px-4 py-2 rounded w-full hover:bg-blue-700 transition"
+        >
+          Login
+        </button>
+
+        <p id="errorMsg" class="text-red-500 text-sm text-center mt-2 hidden"></p>
+      </form>
+
+      <p class="mt-4 text-sm text-center text-gray-600">
+        Noch kein Konto?
+        <a href="register.html" class="text-blue-600 hover:underline">Registrieren</a>
+      </p>
+    </div>
+
+    <script>
+      const API_BASE =
+        window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+          ? "http://localhost:5001"
+          : "https://monetabackend-1.onrender.com";
+
+      const form = document.getElementById("loginForm");
+      const errorMsg = document.getElementById("errorMsg");
+      const button = document.getElementById("loginButton");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          errorMsg.textContent = "Bitte E-Mail und Passwort eingeben.";
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+
+        errorMsg.classList.add("hidden");
+        button.disabled = true;
+        button.textContent = "Wird geprüft...";
+
+        try {
+          console.log("🔵 Sende Login an:", `${API_BASE}/api/auth/login`);
+
+          const res = await fetch(`${API_BASE}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          console.log("🟡 Response Status:", res.status);
+
+          const data = await res.json();
+
+          console.log("🟢 LOGIN RESPONSE:", data);
+          console.log("🟣 data.token:", data.token);
+
+          if (!res.ok) {
+            errorMsg.textContent = data.message || "❌ Login fehlgeschlagen!";
+            errorMsg.classList.remove("hidden");
+            return;
+          }
+
+          // Token speichern
+          localStorage.setItem("username", data.user.username); 
+          localStorage.setItem("token", data.token);
+
+          console.log("🟢 Token im localStorage:", localStorage.getItem("token"));
+
+          alert("✅ Login erfolgreich!");
+          window.location.href = "earnings.html";
+        } catch (err) {
+          console.error("🔴 Fehler:", err);
+          errorMsg.textContent = "🚫 Keine Verbindung zum Server möglich.";
+          errorMsg.classList.remove("hidden");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Login";
+        }
+      });
+    </script>
+  </body>
+</html>
