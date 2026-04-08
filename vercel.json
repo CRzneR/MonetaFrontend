@@ -1,8 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/pages/(.*)", "destination": "/pages/$1" }
-  ],
-  "redirects": [
-    { "source": "/", "destination": "/pages/dashboard.html", "permanent": false }
-  ]
+  "rewrites": [{ "source": "/pages/(.*)", "destination": "/pages/$1" }],
+  "redirects": [{ "source": "/", "destination": "/pages/fixkosten.html", "permanent": false }]
 }

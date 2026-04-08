@@ -244,7 +244,7 @@ function addToTable(c) {
         type="number"
         step="0.01"
         inputmode="decimal"
-        class="w-28 border border-gray-300 rounded px-2 py-1 text-right"
+        class="w-24 border border-gray-300 rounded px-2 py-1 text-right"
         placeholder="0.00"
         value="${abgebuchtValue}"
         data-id="${c._id}"
